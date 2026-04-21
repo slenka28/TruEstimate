@@ -13,7 +13,8 @@ export default function SearchBar({ onSelect }) {
         return;
       }
       try {
-        const res = await fetch(`http://localhost:8000/search?query=${encodeURIComponent(query)}`);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiUrl}/search?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         setResults(data);
         setIsOpen(true);

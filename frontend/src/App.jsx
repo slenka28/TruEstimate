@@ -12,7 +12,8 @@ export default function App() {
   const fetchBuildingData = async (buildingName) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/building/${encodeURIComponent(buildingName)}`);
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/building/${encodeURIComponent(buildingName)}`);
       if (response.ok) {
         const result = await response.json();
         setData(result);
