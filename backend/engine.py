@@ -2,8 +2,23 @@ import numpy as np
 
 def compute_truestimate(ppsft_list):
     prices = np.array(ppsft_list)
+
     if len(prices) == 0:
         return 0.0, 0.0, [0.0, 0.0], 0
+
+    n = len(prices)
+
+    # 🔥 NEW RULE (ADD THIS BLOCK)
+    if n <= 4:
+        estimate = np.max(prices)
+        confidence = (n / 4) * 100   # optional scaling
+        rng = [float(np.min(prices)), float(np.max(prices))]
+
+        return round(float(estimate), 2), round(confidence, 2), rng, n
+
+    # --------------------------------
+    # EXISTING LOGIC (UNCHANGED BELOW)
+    # --------------------------------
 
     # Step 1
     M1 = np.median(prices)

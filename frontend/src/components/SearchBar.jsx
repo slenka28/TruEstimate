@@ -33,7 +33,7 @@ export default function SearchBar({ onSelect }) {
         <input 
           type="text"
           placeholder="Search for a building name (e.g. Prestige...)"
-          className="w-full bg-[#161F2E]/80 border border-gray-700/80 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-2xl backdrop-blur-xl transition-all"
+          className="w-full bg-card border border-card-border rounded-2xl py-4 pl-12 pr-4 text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm transition-all"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => { if (results.length > 0) setIsOpen(true); }}
@@ -42,11 +42,11 @@ export default function SearchBar({ onSelect }) {
       </div>
       
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 w-full mt-3 bg-card border border-gray-700/80 rounded-2xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.8)] max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2">
+        <div className="absolute top-full left-0 w-full mt-3 bg-card border border-card-border rounded-2xl shadow-xl max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2">
           {results.map((bldg) => (
             <button
               key={bldg}
-              className="w-full text-left px-5 py-4 flex items-center gap-3 hover:bg-gray-800/80 transition-colors border-b border-gray-800/50 last:border-0"
+              className="w-full text-left px-5 py-4 flex items-center gap-3 hover:bg-background-secondary transition-colors border-b border-card-border/50 last:border-0"
               onClick={() => {
                 setQuery(bldg);
                 setIsOpen(false);
@@ -54,7 +54,7 @@ export default function SearchBar({ onSelect }) {
               }}
             >
               <MapPin className="w-4 h-4 text-primary" />
-              <span className="text-gray-200 font-medium">{bldg}</span>
+              <span className="text-textMain font-medium">{bldg}</span>
             </button>
           ))}
         </div>

@@ -1,16 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0C111A;
-  --color-card: #161F2E;
-  --color-primary: #4338CA;
-  --color-accent: #10B981;
-  --color-danger: #F43F5E;
-  --color-textMain: #F3F4F6;
-  --color-textMuted: #9CA3AF;
+  --color-background: #F8FAFC;
+  --color-background-secondary: #F1F5F9;
+  --color-card: #FFFFFF;
+  --color-card-border: #E2E8F0;
+  --color-primary: #22C55E;
+  --color-primary-dark: #16A34A;
+  --color-danger: #EF4444;
+  --color-textMain: #0F172A;
+  --color-textSecondary: #334155;
+  --color-textMuted: #64748B;
   --font-sans: "Inter", "system-ui", "sans-serif";
+  --font-display: "Inter", "system-ui", "sans-serif";
+  --font-body-sm: "Inter", "system-ui", "sans-serif";
+  --font-body-md: "Inter", "system-ui", "sans-serif";
 }
 
 body {
@@ -22,14 +28,15 @@ body {
 
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0C111A; 
+  background: var(--color-background); 
 }
 ::-webkit-scrollbar-thumb {
-  background: #161F2E; 
+  background: var(--color-card-border); 
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4338CA; 
+  background: var(--color-textMuted); 
 }
