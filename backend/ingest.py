@@ -32,7 +32,9 @@ df = df.rename(columns={
     "Taluka": "taluka",
     "Hobli": "hobli",
     "Village": "village",
-    "Market value": "market_value"   # 🔥 IMPORTANT
+    "Market value": "market_value",
+    "Buyer Name": "buyer_name",
+    "Seller": "seller_name"
 })
 
 # Keep only required columns (+ market_value for filtering)
@@ -52,7 +54,9 @@ df = df[
         "taluka",
         "hobli",
         "village",
-        "market_value"
+        "market_value",
+        "buyer_name",
+        "seller_name"
     ]
 ]
 
@@ -120,7 +124,9 @@ CREATE TABLE transactions (
     district TEXT,
     taluka TEXT,
     hobli TEXT,
-    village TEXT
+    village TEXT,
+    buyer_name TEXT,
+    seller_name TEXT
 );
 """)
 
@@ -131,7 +137,7 @@ df_raw.to_sql("transactions", conn_raw, if_exists="append", index=False)
 conn_raw.commit()
 conn_raw.close()
 
-print(f"✅ RAW DB: {len(df_raw)} records inserted")
+print(f"SUCCESS: RAW DB: {len(df_raw)} records inserted")
 
 # 🔥 STEP 2: TRUESTIMATE CLEANING (STRICT FILTER)
 
@@ -162,7 +168,9 @@ CREATE TABLE transactions (
     district TEXT,
     taluka TEXT,
     hobli TEXT,
-    village TEXT
+    village TEXT,
+    buyer_name TEXT,
+    seller_name TEXT
 );
 """)
 
@@ -170,4 +178,4 @@ df_clean.to_sql("transactions", conn_clean, if_exists="append", index=False)
 conn_clean.commit()
 conn_clean.close()
 
-print(f"✅ TRUESTIMATE DB: {len(df_clean)} records inserted")
+print(f"SUCCESS: TRUESTIMATE DB: {len(df_clean)} records inserted")

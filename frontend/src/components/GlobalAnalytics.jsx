@@ -262,8 +262,8 @@ export default function GlobalAnalytics() {
           </div>
 
           {/* Chart & Top Transactions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-card border border-card-border rounded-xl p-6 shadow-sm min-h-[350px] flex flex-col">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7 bg-card border border-card-border rounded-xl p-6 shadow-sm min-h-[350px] flex flex-col">
               <h3 className="text-lg font-bold text-textMain mb-1">Price Trends</h3>
               <p className="text-xs text-textMuted font-medium mb-6">Comparative PPSF movement across trends</p>
 
@@ -291,15 +291,15 @@ export default function GlobalAnalytics() {
               </p>
             </div>
 
-            <div className="bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col">
+            <div className="lg:col-span-5 bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col min-h-[350px]">
               <h3 className="text-lg font-bold text-textMain mb-1">Top Value Deals</h3>
               <p className="text-xs text-textMuted font-medium mb-6">Highest recorded registries</p>
               
               <div className="space-y-3 flex-1 overflow-y-auto custom-scrollbar">
                 {data.TopTransactions.map((t, i) => (
                   <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background-secondary border border-card-border hover:border-primary/50 transition-colors">
-                    <div className="overflow-hidden">
-                       <p className="text-sm font-bold text-textMain truncate max-w-[140px]">{t.building_name}</p>
+                    <div className="overflow-hidden flex-1">
+                       <p className="text-sm font-bold text-textMain truncate">{t.building_name}</p>
                        <p className="text-[10px] text-textMuted font-medium mt-0.5">{new Date(t.date).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">

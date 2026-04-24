@@ -265,12 +265,14 @@ export default function AllTransactionsTable() {
             
             <div className="p-6 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-y-4 gap-x-6">
-                {Object.entries(selectedTxn).map(([key, value]) => {
+                {Object.entries(selectedTxn)
+                  .filter(([key]) => key !== 'id')
+                  .map(([key, value]) => {
                   // Format some values specifically
                   let displayValue = value;
                   if (value === null || value === undefined || value === '') {
                     displayValue = '-';
-                  } else if (key === 'transaction_date') {
+                  } else if (key === 'transaction_date' || key === 'date') {
                     displayValue = new Date(value).toLocaleDateString("en-GB");
                   } else if (key === 'ppsft' || key === 'value') {
                     displayValue = `₹${Math.round(value).toLocaleString('en-IN')}`;

@@ -10,7 +10,8 @@ import {
   Briefcase,
   Settings,
   Menu,
-  List
+  List,
+  Lock
 } from 'lucide-react';
 import SearchBar from './components/SearchBar';
 import TruEstimateHero from './components/TruEstimateHero';
@@ -48,13 +49,16 @@ export default function App() {
     }
   };
 
-  const NavItem = ({ id, icon: Icon, label }) => (
+  const NavItem = ({ id, icon: Icon, label, disabled = false }) => (
     <button 
-      onClick={() => { setActiveTab(id); setMobileMenuOpen(false); }}
-      className={`w-full flex items-center gap-3 py-3 px-4 transition-all duration-150 ${activeTab === id ? 'bg-background text-primary border-r-2 border-primary rounded-l-lg shadow-sm font-semibold' : 'text-textMuted hover:bg-background-secondary hover:text-primary rounded-lg font-medium'}`}
+      onClick={() => { if (!disabled) { setActiveTab(id); setMobileMenuOpen(false); } }}
+      disabled={disabled}
+      title={disabled ? "Coming Soon 😉" : ""}
+      className={`w-full flex items-center gap-3 py-3 px-4 transition-all duration-150 ${disabled ? 'opacity-50 cursor-not-allowed' : (activeTab === id ? 'bg-background text-primary border-r-2 border-primary rounded-l-lg shadow-sm font-semibold' : 'text-textMuted hover:bg-background-secondary hover:text-primary rounded-lg font-medium')}`}
     >
       <Icon className="w-5 h-5" />
-      <span className="text-sm tracking-wide">{label}</span>
+      <span className="text-sm tracking-wide flex-1 text-left">{label}</span>
+      {disabled && <Lock className="w-3 h-3 opacity-50" />}
     </button>
   );
 
@@ -63,62 +67,34 @@ export default function App() {
       {/* Side Navigation */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-card-border transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 flex flex-col`}>
         <div className="h-16 flex items-center px-6 border-b border-card-border shrink-0 gap-3">
-           <div className="w-8 h-8 flex items-center justify-center bg-primary/10 rounded border border-primary/20">
-             <Building2 className="w-5 h-5 text-primary-dark" />
+           <div className="w-10 h-10 flex items-center justify-center bg-white rounded border border-card-border overflow-hidden p-1.5 shadow-sm">
+             <img src="/favicon.png" alt="TruEstimate Logo" className="w-full h-full object-contain" />
            </div>
            <div>
              <h1 className="text-lg font-black tracking-tight text-primary-dark leading-none">TruEstimate</h1>
-             <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mt-0.5">Institutional</p>
+             <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mt-0.5">Engine</p>
            </div>
         </div>
         
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
            <NavItem id="global" icon={LayoutDashboard} label="Global Dashboard" />
-           <NavItem id="project" icon={Building2} label="Project Estimate" />
+           <NavItem id="project" icon={Building2} label="TruEstimate" />
            <NavItem id="all_transactions" icon={List} label="All Transactions" />
-           <NavItem id="compare" icon={ArrowRightLeft} label="Compare Assets" />
+           <NavItem id="compare" icon={ArrowRightLeft} label="Compare Assets" disabled={true} />
         </nav>
         
-        <div className="p-4 border-t border-card-border space-y-1">
-           <button className="w-full flex items-center gap-3 py-2 px-4 text-textMuted hover:bg-background-secondary hover:text-textMain rounded-lg transition-colors">
-             <HelpCircle className="w-5 h-5" />
-             <span className="text-sm font-medium">Support</span>
-           </button>
-           <button className="w-full flex items-center gap-3 py-2 px-4 text-textMuted hover:bg-background-secondary hover:text-textMain rounded-lg transition-colors">
-             <Settings className="w-5 h-5" />
-             <span className="text-sm font-medium">Settings</span>
-           </button>
-        </div>
+        {/* Footer removed */}
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col md:ml-64 min-w-0 bg-background">
         
-        {/* Top Navbar */}
-        <header className="h-16 bg-white border-b border-card-border sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
-           <div className="flex items-center gap-4">
-              <button className="md:hidden p-2 -ml-2 text-textMuted hover:text-textMain" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                <Menu className="w-6 h-6" />
-              </button>
-              <div className="hidden sm:flex items-center relative">
-                 <Search className="w-4 h-4 text-textMuted absolute left-3 top-1/2 -translate-y-1/2" />
-                 <input 
-                   type="text" 
-                   placeholder="Search assets, locations..." 
-                   className="pl-9 pr-4 py-2 bg-background-secondary border border-card-border rounded-lg text-sm text-textMain focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all"
-                 />
-              </div>
-           </div>
-           
-           <div className="flex items-center gap-3 sm:gap-4">
-              <button className="p-2 text-textMuted hover:bg-background-secondary hover:text-primary rounded-full transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
-              <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center overflow-hidden">
-                 <Briefcase className="w-4 h-4 text-primary-dark" />
-              </div>
-           </div>
-        </header>
+        {/* Top Navbar removed */}
+        {mobileMenuOpen === false && (
+          <button className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white border border-card-border rounded-lg shadow-sm text-textMuted hover:text-textMain" onClick={() => setMobileMenuOpen(true)}>
+            <Menu className="w-6 h-6" />
+          </button>
+        )}
 
         {/* Dynamic Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">

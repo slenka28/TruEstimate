@@ -57,7 +57,7 @@ def get_building_details(building_name: str):
     
     # Get building transactions and village name
     cursor.execute("""
-        SELECT ppsft, transaction_date as date, area, value, unit_no, config, tower, wing, floor, village
+        SELECT ppsft, transaction_date as date, area, value, unit_no, config, tower, wing, floor, village, buyer_name, seller_name
         FROM transactions 
         WHERE building_name = ? COLLATE NOCASE
         ORDER BY date(transaction_date) DESC
@@ -158,7 +158,7 @@ def get_global_analytics(
     hobli: Optional[str] = None,
     village: Optional[str] = None
 ):
-    conn = get_raw_connection()
+    conn = get_clean_connection()
     cursor = conn.cursor()
     
     conditions = []
