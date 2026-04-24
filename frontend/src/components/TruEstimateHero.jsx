@@ -50,7 +50,7 @@ export default function TruEstimateHero({ data }) {
       <div className="col-span-1 xl:col-span-7 space-y-6">
         
         {/* Prime Estimate Header */}
-        <div className="bg-card border border-card-border rounded-2xl p-8 shadow-sm group relative overflow-hidden">
+        <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm group relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
              <ShieldCheck className="w-48 h-48 text-primary" />
           </div>
@@ -60,13 +60,13 @@ export default function TruEstimateHero({ data }) {
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-1">
                   <Building className="w-5 h-5 text-primary/60" />
-                  <h1 className="text-2xl md:text-3xl font-bold text-textMain tracking-tight">{building}</h1>
+                  <h1 className="text-xl md:text-2xl font-bold text-textMain tracking-tight">{building}</h1>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] uppercase font-bold tracking-widest text-textMuted bg-background-secondary border border-card-border px-2 py-0.5 rounded">TruEstimate</span>
                 </div>
               </div>
-              <h2 className="text-4xl md:text-6xl font-black text-primary-dark tracking-tighter mb-2">
+              <h2 className="text-3xl md:text-5xl font-black text-primary-dark tracking-tighter mb-2">
                  ₹{Math.floor(TruEstimate).toLocaleString()}
               </h2>
               <div className="flex items-center gap-4 text-textSecondary">
@@ -81,15 +81,15 @@ export default function TruEstimateHero({ data }) {
               </div>
             </div>
 
-            <div className="bg-background-secondary border border-card-border rounded-xl p-4 text-center min-w-[120px]">
-               <div className="text-3xl font-black text-primary-dark mb-0 leading-none">{TotalTransactions}</div>
+            <div className="bg-background-secondary border border-card-border rounded-xl p-3 text-center min-w-[100px]">
+               <div className="text-2xl font-black text-primary-dark mb-0 leading-none">{TotalTransactions}</div>
                <div className="text-[10px] uppercase text-textMuted font-bold mt-1 tracking-widest">Total Txns</div>
             </div>
           </div>
         </div>
 
         {/* Interactive Adjustments Panel */}
-        <div className="bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
           <div className="mb-6">
              <h3 className="text-sm font-bold text-textMain uppercase tracking-widest mb-1">Price Adjustments</h3>
           </div>
@@ -159,8 +159,8 @@ export default function TruEstimateHero({ data }) {
       <div className="col-span-1 xl:col-span-5 space-y-6">
         
         {/* Live Valuation Breakdown Card */}
-        <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm">
-           <h3 className="text-lg font-bold text-textMain mb-6">Live Valuation Breakdown</h3>
+        <div className="bg-card border border-card-border rounded-2xl p-5 shadow-sm">
+           <h3 className="text-lg font-bold text-textMain mb-5">Live Valuation Breakdown</h3>
            
            <div className="space-y-4">
               <div className="flex justify-between py-2 border-b border-card-border/50">
@@ -182,7 +182,7 @@ export default function TruEstimateHero({ data }) {
               
               <div className="mt-8 pt-4 border-t-2 border-card-border">
                  <div className="text-[10px] text-textMuted uppercase font-bold tracking-widest mb-1">Final Adjusted Valuation</div>
-                 <div className="text-4xl lg:text-5xl font-black text-primary-dark tracking-tighter">₹{Math.floor(finalPrice).toLocaleString()}</div>
+                 <div className="text-3xl lg:text-4xl font-black text-primary-dark tracking-tighter">₹{Math.floor(finalPrice).toLocaleString()}</div>
                  <div className="text-xs text-textMuted mt-2 leading-relaxed italic font-medium">Institutional adjustments calculated in real-time based on local demand supply metrics.</div>
               </div>
            </div>
