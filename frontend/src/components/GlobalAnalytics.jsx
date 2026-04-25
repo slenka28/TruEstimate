@@ -66,20 +66,26 @@ const FilterCombobox = ({ options, value, onChange, placeholder, disabled }) => 
 export default function GlobalAnalytics() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
   const [hierarchy, setHierarchy] = useState({});
 
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
   useEffect(() => {
     // Fetch hierarchy
-    fetch('http://localhost:8000/locations/hierarchy')
+    fetch(`${apiUrl}/locations/hierarchy`)
       .then(res => res.json())
       .then(data => setHierarchy(data))
-      .catch(console.error);
-  }, []);
+      .catch(err => {
+        console.error("Error fetching hierarchy:", err);
+      });
+  }, [apiUrl]);
 
   useEffect(() => {
     const fetchGlobalData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const queryParams = new URLSearchParams();
         if (filters.district) queryParams.append('district', filters.district);
@@ -87,19 +93,22 @@ export default function GlobalAnalytics() {
         if (filters.hobli) queryParams.append('hobli', filters.hobli);
         if (filters.village) queryParams.append('village', filters.village);
 
-        const response = await fetch(`http://localhost:8000/global/analytics?${queryParams.toString()}`);
+        const response = await fetch(`${apiUrl}/global/analytics?${queryParams.toString()}`);
         if (response.ok) {
           const result = await response.json();
           setData(result);
+        } else {
+          throw new Error(`Server responded with ${response.status}`);
         }
       } catch (error) {
         console.error("Error fetching global analytics", error);
+        setError("Failed to load dashboard data. Please ensure the backend is running.");
       } finally {
         setLoading(false);
       }
     };
     fetchGlobalData();
-  }, [filters]);
+  }, [filters, apiUrl]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -222,8 +231,33 @@ export default function GlobalAnalytics() {
         />
       </div>
 
-      {loading || !data ? (
-        <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div></div>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 bg-card border border-card-border rounded-xl shadow-sm">
+           <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+           <p className="text-sm font-medium text-textMuted">Compiling market intelligence...</p>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-danger/20 shadow-sm">
+           <div className="w-16 h-16 bg-danger/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-danger/10">
+             <Activity className="w-6 h-6 text-danger" />
+           </div>
+           <h3 className="text-lg font-bold text-textMain">Connection Error</h3>
+           <p className="text-sm text-textMuted mt-1 max-w-sm mx-auto text-center px-6">{error}</p>
+           <button 
+             onClick={() => window.location.reload()}
+             className="mt-6 px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary-dark transition-colors"
+           >
+             Retry Connection
+           </button>
+        </div>
+      ) : !data ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-card-border shadow-sm">
+           <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-card-border">
+             <BarChart3 className="w-6 h-6 text-textMuted" />
+           </div>
+           <h3 className="text-lg font-bold text-textMain">No Data Available</h3>
+           <p className="text-sm text-textMuted mt-1">We couldn't find any transactions matching your filters.</p>
+        </div>
       ) : (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* KPI Grid */}
