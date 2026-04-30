@@ -31,21 +31,26 @@ export default function App() {
   const [globalStats, setGlobalStats] = useState(null);
 
   useEffect(() => {
-    const fetchGlobalStats = async () => {
+    const fetchGlobalStats = async (attempt = 1) => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        console.log("API CHECk", apiUrl)
         const response = await fetch(`${apiUrl}/global/analytics`);
         if (response.ok) {
           const result = await response.json();
           setGlobalStats(result.KPIs);
+        } else if (attempt < 3) {
+          // Server may be mid-reload — retry after 2s
+          setTimeout(() => fetchGlobalStats(attempt + 1), 2000);
         }
       } catch (error) {
-        console.error("Error fetching global stats:", error);
+        if (attempt < 3) {
+          setTimeout(() => fetchGlobalStats(attempt + 1), 2000);
+        }
       }
     };
     fetchGlobalStats();
   }, []);
+
 
   const fetchBuildingData = async (buildingName) => {
     setLoading(true);
