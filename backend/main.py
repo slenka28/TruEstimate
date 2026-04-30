@@ -55,6 +55,16 @@ def search_villages(query: str = ""):
 
 @app.get("/building/{building_name}")
 def get_building_details(building_name: str):
+    from qc_database import get_qc_connection
+    qc_conn = get_qc_connection()
+    qc_cursor = qc_conn.cursor()
+    qc_cursor.execute("SELECT 1 FROM publish_ready WHERE project_name = ? COLLATE NOCASE", (building_name,))
+    is_published = qc_cursor.fetchone()
+    qc_conn.close()
+    
+    if not is_published:
+        raise HTTPException(status_code=404, detail="Building not found in verified published records")
+
     conn = get_clean_connection()
     cursor = conn.cursor()
     
