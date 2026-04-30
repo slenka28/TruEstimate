@@ -21,7 +21,7 @@ app.add_middleware(
 def search_buildings(query: str = ""):
     if not query:
         return []
-    conn = get_raw_connection()
+    conn = get_clean_connection()
     cursor = conn.cursor()
     # Case-insensitive LIKE search
     cursor.execute("""
@@ -39,7 +39,7 @@ def search_buildings(query: str = ""):
 def search_villages(query: str = ""):
     if not query:
         return []
-    conn = get_raw_connection()
+    conn = get_clean_connection()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT DISTINCT village 
@@ -127,7 +127,7 @@ def get_building_details(building_name: str):
 @app.get("/locations/hierarchy")
 def get_locations_hierarchy():
     start_total = time.time()
-    conn = get_raw_connection()
+    conn = get_clean_connection()
     cursor = conn.cursor()
     start_query = time.time()
     cursor.execute("""
