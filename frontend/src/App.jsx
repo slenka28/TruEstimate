@@ -164,6 +164,7 @@ export default function App() {
                 <LandingHero
                   onSearch={fetchBuildingData}
                   totalProperties={globalStats?.total_properties}
+                  totalTransactions={globalStats?.total_transactions}
                 />
               )}
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { ShieldCheck, Zap, Target, Search } from 'lucide-react';
 import SearchBar from './SearchBar';
 
-export default function LandingHero({ onSearch, totalProperties }) {
+export default function LandingHero({ onSearch, totalProperties, totalTransactions }) {
   return (
     <div className="relative min-h-[80vh] flex flex-col items-center justify-center px-4 overflow-hidden rounded-[3rem] bg-background-cream border border-card-border shadow-inner">
       {/* Background Decorative Elements */}
@@ -31,7 +31,7 @@ export default function LandingHero({ onSearch, totalProperties }) {
               <Zap className="w-5 h-5 text-primary" />
             </div>
             <p className="text-sm font-bold text-textMain">
-              {totalProperties?.toLocaleString() || '3,500'}+ <span className="text-textMuted font-normal">Projects Valued</span>
+              {totalProperties?.toLocaleString() || '...'} <span className="text-textMuted font-normal">Projects Valued</span>
             </p>
           </div>
 
@@ -49,7 +49,7 @@ export default function LandingHero({ onSearch, totalProperties }) {
               <ShieldCheck className="w-5 h-5 text-primary" />
             </div>
             <p className="text-sm font-bold text-textMain">
-              SRO <span className="text-textMuted font-normal">Real Registrations</span>
+              {totalTransactions?.toLocaleString() || '...'} <span className="text-textMuted font-normal">Real Registrations</span>
             </p>
           </div>
         </div>

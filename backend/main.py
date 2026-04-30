@@ -5,6 +5,7 @@ import sqlite3
 import time
 from engine import compute_truestimate
 from database import get_raw_connection, get_clean_connection
+from qc_database import get_qc_connection
 
 app = FastAPI(title="TruEstimate Search Platform")
 
@@ -197,7 +198,7 @@ def get_global_analytics(
         {where_clause}
     """
     cursor.execute(kpi_query, params)
-    kpis = dict(cursor.fetchone() or {"total_transactions": 0, "total_value": 0})
+    kpis = dict(cursor.fetchone() or {"total_transactions": 0, "total_properties": 0, "total_value": 0})
     
     # Fetch PPSFT for estimation engine
     cursor.execute(f"SELECT ppsft FROM transactions {where_clause}", params)
@@ -307,4 +308,202 @@ def get_all_transactions(
         "page": page,
         "page_size": page_size,
         "transactions": [dict(row) for row in rows]
+    }
+
+
+# ─────────────────────────────────────────────────────────────────
+# QC & PUBLISHING LAYER  (backed by truestimate_system.db)
+# ─────────────────────────────────────────────────────────────────
+
+@app.get("/qc/published")
+def get_published_listings(
+    label: Optional[str] = None,
+    min_deviation: Optional[float] = None,
+    max_deviation: Optional[float] = None,
+    limit: int = Query(500, ge=1, le=5000)
+):
+    """
+    Returns all records from publish_ready — the final validated layer.
+    Supports optional filtering by QC label and deviation range.
+    This is the ONLY endpoint the frontend should use for QC-validated data.
+    """
+    conn = get_qc_connection()
+    cursor = conn.cursor()
+
+    conditions, params = [], []
+    if label:
+        conditions.append("qc_label = ?")
+        params.append(label.upper())
+    if min_deviation is not None:
+        conditions.append("deviation >= ?")
+        params.append(min_deviation)
+    if max_deviation is not None:
+        conditions.append("deviation <= ?")
+        params.append(max_deviation)
+
+    where = "WHERE " + " AND ".join(conditions) if conditions else ""
+    cursor.execute(
+        f"SELECT * FROM publish_ready {where} ORDER BY deviation ASC LIMIT ?",
+        params + [limit]
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    return {
+        "count": len(rows),
+        "records": [dict(r) for r in rows]
+    }
+
+
+@app.get("/qc/results")
+def get_qc_audit_trail(
+    qc_status: Optional[str] = None,
+    qc_label: Optional[str] = None,
+    source_file: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=1000)
+):
+    """
+    Full audit trail — returns all records from qc_results including FAILs.
+    Intended for admin/debug use, NOT for frontend display.
+    """
+    conn = get_qc_connection()
+    cursor = conn.cursor()
+
+    conditions, params = [], []
+    if qc_status:
+        conditions.append("qc_status = ?")
+        params.append(qc_status.upper())
+    if qc_label:
+        conditions.append("qc_label = ?")
+        params.append(qc_label.upper())
+    if source_file:
+        conditions.append("source_file = ?")
+        params.append(source_file)
+
+    where = "WHERE " + " AND ".join(conditions) if conditions else ""
+    offset = (page - 1) * page_size
+
+    count_row = cursor.execute(
+        f"SELECT COUNT(*) as c FROM qc_results {where}", params
+    ).fetchone()
+    total = count_row["c"]
+
+    cursor.execute(
+        f"SELECT * FROM qc_results {where} ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        params + [page_size, offset]
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    return {
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "results": [dict(r) for r in rows]
+    }
+
+
+@app.get("/qc/stats")
+def get_qc_stats():
+    """
+    Pipeline monitoring dashboard:
+    - Total ask prices ingested
+    - Total matched / unmatched
+    - Pass rate %
+    - Reject rate %
+    - Distribution of QC labels
+    - Number of published records
+    """
+    conn = get_qc_connection()
+    cursor = conn.cursor()
+
+    # Total ingested raw records
+    total_raw = cursor.execute(
+        "SELECT COUNT(*) as c FROM ask_prices_raw"
+    ).fetchone()["c"]
+
+    # Stats from qc_results
+    status_dist = cursor.execute("""
+        SELECT qc_status, COUNT(*) as cnt
+        FROM qc_results
+        GROUP BY qc_status
+    """).fetchall()
+    status_map = {row["qc_status"]: row["cnt"] for row in status_dist}
+
+    label_dist = cursor.execute("""
+        SELECT qc_label, COUNT(*) as cnt
+        FROM qc_results
+        GROUP BY qc_label
+        ORDER BY cnt DESC
+    """).fetchall()
+
+    total_qc   = sum(status_map.values())
+    pass_count = status_map.get("PASS", 0)
+    fail_count = status_map.get("FAIL", 0)
+    no_match   = cursor.execute(
+        "SELECT COUNT(*) as c FROM qc_results WHERE qc_label = 'NO_MATCH'"
+    ).fetchone()["c"]
+
+    published = cursor.execute(
+        "SELECT COUNT(*) as c FROM publish_ready"
+    ).fetchone()["c"]
+
+    truestimate_projects = cursor.execute(
+        "SELECT COUNT(*) as c FROM truestimate_projects"
+    ).fetchone()["c"]
+
+    # Deviation percentiles from PASS records
+    dev_stats = cursor.execute("""
+        SELECT
+            MIN(deviation)   as min_dev,
+            MAX(deviation)   as max_dev,
+            AVG(deviation)   as avg_dev
+        FROM qc_results
+        WHERE qc_status = 'PASS'
+    """).fetchone()
+
+    conn.close()
+
+    return {
+        "ingested_raw"         : total_raw,
+        "truestimate_projects" : truestimate_projects,
+        "total_evaluated"      : total_qc,
+        "matched"              : total_qc - no_match,
+        "unmatched"            : no_match,
+        "pass_count"           : pass_count,
+        "fail_count"           : fail_count,
+        "pass_rate_pct"        : round(pass_count / total_qc * 100, 1) if total_qc else 0,
+        "reject_rate_pct"      : round(fail_count / total_qc * 100, 1) if total_qc else 0,
+        "published"            : published,
+        "label_distribution"   : [dict(r) for r in label_dist],
+        "deviation_stats"      : {
+            "min": round(dev_stats["min_dev"] or 0, 4),
+            "max": round(dev_stats["max_dev"] or 0, 4),
+            "avg": round(dev_stats["avg_dev"] or 0, 4),
+        } if dev_stats else {}
+    }
+
+
+@app.get("/qc/unmatched")
+def get_unmatched_projects():
+    """
+    Returns all ask-price projects that had no matching TruEstimate entry.
+    Useful for identifying gaps in the valuation coverage.
+    """
+    conn = get_qc_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT DISTINCT project_name, market_ask, source_file, created_at
+        FROM qc_results
+        WHERE qc_label = 'NO_MATCH'
+        ORDER BY project_name
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    return {
+        "count": len(rows),
+        "unmatched": [dict(r) for r in rows]
     }
