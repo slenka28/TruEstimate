@@ -2,21 +2,22 @@
 
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
 @theme {
   --color-background: #F8FAFC;
   --color-background-secondary: #F1F5F9;
+  --color-background-cream: #fdfcf7;
   --color-card: #FFFFFF;
   --color-card-border: #E2E8F0;
-  --color-primary: #22C55E;
-  --color-primary-dark: #16A34A;
+  --color-primary: #15803d;
+  --color-primary-dark: #064e3b;
   --color-danger: #EF4444;
   --color-textMain: #0F172A;
   --color-textSecondary: #334155;
   --color-textMuted: #64748B;
   --font-sans: "Inter", "system-ui", "sans-serif";
-  --font-display: "Inter", "system-ui", "sans-serif";
-  --font-body-sm: "Inter", "system-ui", "sans-serif";
-  --font-body-md: "Inter", "system-ui", "sans-serif";
+  --font-serif: "Instrument Serif", serif;
 }
 
 body {

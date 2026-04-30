@@ -1,7 +1,9 @@
 import sqlite3
+import os
 
-RAW_DB = "truestate.db"
-CLEAN_DB = "truestimate.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RAW_DB = os.path.join(BASE_DIR, "truestate.db")
+CLEAN_DB = os.path.join(BASE_DIR, "truestimate.db")
 
 def get_raw_connection():
     conn = sqlite3.connect(RAW_DB)

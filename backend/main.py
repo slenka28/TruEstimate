@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import sqlite3
+import time
 from engine import compute_truestimate
 from database import get_raw_connection, get_clean_connection
 
@@ -124,16 +125,20 @@ def get_building_details(building_name: str):
 
 @app.get("/locations/hierarchy")
 def get_locations_hierarchy():
+    start_total = time.time()
     conn = get_raw_connection()
     cursor = conn.cursor()
+    start_query = time.time()
     cursor.execute("""
         SELECT DISTINCT district, taluka, hobli, village
         FROM transactions
         WHERE district IS NOT NULL
     """)
     rows = cursor.fetchall()
+    print(f"Hierarchy Query took: {time.time() - start_query:.4f}s")
     conn.close()
 
+    start_proc = time.time()
     hierarchy = {}
     for row in rows:
         d, t, h, v = row["district"], row["taluka"], row["hobli"], row["village"]
@@ -149,6 +154,8 @@ def get_locations_hierarchy():
         if v and v not in hierarchy[d][t][h]:
             hierarchy[d][t][h].append(v)
             
+    print(f"Hierarchy Processing took: {time.time() - start_proc:.4f}s")
+    print(f"Hierarchy Total took: {time.time() - start_total:.4f}s")
     return hierarchy
 
 @app.get("/global/analytics")
@@ -158,6 +165,7 @@ def get_global_analytics(
     hobli: Optional[str] = None,
     village: Optional[str] = None
 ):
+    start_total = time.time()
     conn = get_clean_connection()
     cursor = conn.cursor()
     
@@ -183,6 +191,7 @@ def get_global_analytics(
     kpi_query = f"""
         SELECT 
             COUNT(*) as total_transactions,
+            COUNT(DISTINCT building_name) as total_properties,
             SUM(value) as total_value
         FROM transactions
         {where_clause}
@@ -224,6 +233,7 @@ def get_global_analytics(
     
     conn.close()
     
+    print(f"Global Analytics Total took: {time.time() - start_total:.4f}s")
     return {
         "KPIs": kpis,
         "Trend": trend,

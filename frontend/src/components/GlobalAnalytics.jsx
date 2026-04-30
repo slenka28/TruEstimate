@@ -12,7 +12,7 @@ const FilterCombobox = ({ options, value, onChange, placeholder, disabled }) => 
 
   return (
     <div className="relative">
-      <div 
+      <div
         className={`bg-background-secondary border border-card-border text-sm text-textMain rounded-lg px-3 py-2 flex items-center justify-between min-w-[160px] cursor-pointer transition-colors hover:border-primary/50 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
@@ -22,11 +22,11 @@ const FilterCombobox = ({ options, value, onChange, placeholder, disabled }) => 
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => {setIsOpen(false); setQuery('');}}></div>
+          <div className="fixed inset-0 z-40" onClick={() => { setIsOpen(false); setQuery(''); }}></div>
           <div className="absolute top-full left-0 z-50 w-full mt-1 bg-card border border-card-border rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
             <div className="p-2 border-b border-card-border z-50 relative bg-card">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="w-full bg-background border border-card-border rounded px-2 py-1.5 text-xs text-textMain focus:outline-none focus:border-primary placeholder-textMuted"
                 placeholder="Search..."
                 value={query}
@@ -36,7 +36,7 @@ const FilterCombobox = ({ options, value, onChange, placeholder, disabled }) => 
               />
             </div>
             <div className="max-h-48 overflow-y-auto relative z-50 bg-card custom-scrollbar">
-              <div 
+              <div
                 className="px-3 py-2 text-xs text-textSecondary hover:bg-background-secondary hover:text-textMain cursor-pointer border-b border-card-border/50 font-bold tracking-wide"
                 onClick={() => { onChange(''); setIsOpen(false); setQuery(''); }}
               >
@@ -46,7 +46,7 @@ const FilterCombobox = ({ options, value, onChange, placeholder, disabled }) => 
                 <div className="px-3 py-3 text-xs text-textMuted text-center font-medium">No results</div>
               ) : (
                 filteredOptions.map(opt => (
-                  <div 
+                  <div
                     key={opt}
                     className={`px-3 py-2 text-xs cursor-pointer hover:bg-background-secondary truncate transition-colors ${value === opt ? 'text-primary font-bold bg-primary/5' : 'text-textMain font-medium'}`}
                     onClick={() => { onChange(opt); setIsOpen(false); setQuery(''); }}
@@ -131,7 +131,7 @@ export default function GlobalAnalytics() {
     } else {
       newFilters[level] = value;
     }
-    
+
     if (level === 'district') {
       delete newFilters.taluka; delete newFilters.hobli; delete newFilters.village;
     } else if (level === 'taluka') {
@@ -143,88 +143,88 @@ export default function GlobalAnalytics() {
   };
 
   const districts = useMemo(() => Object.keys(hierarchy).sort(), [hierarchy]);
-  
+
   const talukas = useMemo(() => {
-     let set = new Set();
-     Object.entries(hierarchy).forEach(([dName, d]) => {
-         if (!filters.district || filters.district === dName) {
-            Object.keys(d).forEach(t => set.add(t));
-         }
-     });
-     return Array.from(set).sort();
+    let set = new Set();
+    Object.entries(hierarchy).forEach(([dName, d]) => {
+      if (!filters.district || filters.district === dName) {
+        Object.keys(d).forEach(t => set.add(t));
+      }
+    });
+    return Array.from(set).sort();
   }, [hierarchy, filters.district]);
 
   const hoblis = useMemo(() => {
-     let set = new Set();
-     Object.entries(hierarchy).forEach(([dName, d]) => {
-         if (!filters.district || filters.district === dName) {
-            Object.entries(d).forEach(([tName, t]) => {
-               if (!filters.taluka || filters.taluka === tName) {
-                  Object.keys(t).forEach(h => set.add(h));
-               }
-            })
-         }
-     });
-     return Array.from(set).sort();
+    let set = new Set();
+    Object.entries(hierarchy).forEach(([dName, d]) => {
+      if (!filters.district || filters.district === dName) {
+        Object.entries(d).forEach(([tName, t]) => {
+          if (!filters.taluka || filters.taluka === tName) {
+            Object.keys(t).forEach(h => set.add(h));
+          }
+        })
+      }
+    });
+    return Array.from(set).sort();
   }, [hierarchy, filters.district, filters.taluka]);
 
   const villages = useMemo(() => {
-     let set = new Set();
-     Object.entries(hierarchy).forEach(([dName, d]) => {
-         if (!filters.district || filters.district === dName) {
-            Object.entries(d).forEach(([tName, t]) => {
-               if (!filters.taluka || filters.taluka === tName) {
-                  Object.entries(t).forEach(([hName, h]) => {
-                     if (!filters.hobli || filters.hobli === hName) {
-                        h.forEach(v => set.add(v));
-                     }
-                  })
-               }
+    let set = new Set();
+    Object.entries(hierarchy).forEach(([dName, d]) => {
+      if (!filters.district || filters.district === dName) {
+        Object.entries(d).forEach(([tName, t]) => {
+          if (!filters.taluka || filters.taluka === tName) {
+            Object.entries(t).forEach(([hName, h]) => {
+              if (!filters.hobli || filters.hobli === hName) {
+                h.forEach(v => set.add(v));
+              }
             })
-         }
-     });
-     return Array.from(set).sort();
+          }
+        })
+      }
+    });
+    return Array.from(set).sort();
   }, [hierarchy, filters.district, filters.taluka, filters.hobli]);
 
   return (
     <div className="w-full space-y-8">
-      
+
       {/* Header */}
       <header className="mb-2">
-         <h1 className="text-3xl font-black text-textMain mb-1">Institutional Overview</h1>
-         <p className="text-sm font-medium text-textMuted">Last updated: Today • Market Session: Open</p>
+        <h1 className="text-3xl font-black text-textMain mb-1">Institutional Overview</h1>
+        <p className="text-sm font-medium text-textMuted">Last updated: Today • Market Session: Open</p>
       </header>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-center bg-card border border-card-border p-4 rounded-xl shadow-sm">
         <div className="flex items-center gap-2 mr-2">
-            <Filter className="w-4 h-4 text-textMuted" />
-            <span className="text-xs font-bold text-textSecondary uppercase tracking-widest">Filters</span>
+          <Filter className="w-4 h-4 text-textMuted" />
+          <span className="text-xs font-bold text-textSecondary uppercase tracking-widest">Filters</span>
         </div>
-        
-        <FilterCombobox 
-          options={districts} 
+
+        <FilterCombobox
+          options={districts}
           value={filters.district}
           onChange={(val) => handleFilterChange('district', val)}
           placeholder="All Districts"
         />
-        
-        <FilterCombobox 
-          options={talukas} 
+
+        <FilterCombobox
+          options={talukas}
           value={filters.taluka}
           onChange={(val) => handleFilterChange('taluka', val)}
           placeholder="All Talukas"
         />
-        
-        <FilterCombobox 
-          options={hoblis} 
+
+        <FilterCombobox
+          options={hoblis}
           value={filters.hobli}
           onChange={(val) => handleFilterChange('hobli', val)}
           placeholder="All Hoblis"
         />
-        
-        <FilterCombobox 
-          options={villages} 
+
+        <FilterCombobox
+          options={villages}
           value={filters.village}
           onChange={(val) => handleFilterChange('village', val)}
           placeholder="All Villages"
@@ -233,30 +233,30 @@ export default function GlobalAnalytics() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 bg-card border border-card-border rounded-xl shadow-sm">
-           <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-           <p className="text-sm font-medium text-textMuted">Compiling market intelligence...</p>
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+          <p className="text-sm font-medium text-textMuted">Compiling market intelligence...</p>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-danger/20 shadow-sm">
-           <div className="w-16 h-16 bg-danger/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-danger/10">
-             <Activity className="w-6 h-6 text-danger" />
-           </div>
-           <h3 className="text-lg font-bold text-textMain">Connection Error</h3>
-           <p className="text-sm text-textMuted mt-1 max-w-sm mx-auto text-center px-6">{error}</p>
-           <button 
-             onClick={() => window.location.reload()}
-             className="mt-6 px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary-dark transition-colors"
-           >
-             Retry Connection
-           </button>
+          <div className="w-16 h-16 bg-danger/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-danger/10">
+            <Activity className="w-6 h-6 text-danger" />
+          </div>
+          <h3 className="text-lg font-bold text-textMain">Connection Error</h3>
+          <p className="text-sm text-textMuted mt-1 max-w-sm mx-auto text-center px-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-6 px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary-dark transition-colors"
+          >
+            Retry Connection
+          </button>
         </div>
       ) : !data ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-card-border shadow-sm">
-           <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-card-border">
-             <BarChart3 className="w-6 h-6 text-textMuted" />
-           </div>
-           <h3 className="text-lg font-bold text-textMain">No Data Available</h3>
-           <p className="text-sm text-textMuted mt-1">We couldn't find any transactions matching your filters.</p>
+          <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-card-border">
+            <BarChart3 className="w-6 h-6 text-textMuted" />
+          </div>
+          <h3 className="text-lg font-bold text-textMain">No Data Available</h3>
+          <p className="text-sm text-textMuted mt-1">We couldn't find any transactions matching your filters.</p>
         </div>
       ) : (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -265,32 +265,32 @@ export default function GlobalAnalytics() {
             <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm group hover:shadow-md transition-shadow">
               <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Total Transactions</p>
               <div className="flex items-end gap-2">
-                 <span className="text-2xl font-black text-textMain">{data.KPIs.total_transactions.toLocaleString()}</span>
-                 <span className="text-primary font-bold text-xs mb-1 flex items-center"><ArrowUp className="w-3 h-3"/> 12%</span>
-              </div>
-            </div>
-            
-            <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm group hover:shadow-md transition-shadow">
-              <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Median PPSF</p>
-              <div className="flex items-end gap-2">
-                 <span className="text-2xl font-black text-textMain">₹{data.KPIs.median_ppsft.toLocaleString()}</span>
-                 <span className="text-primary font-bold text-xs mb-1 flex items-center"><ArrowUp className="w-3 h-3"/> 4.3%</span>
+                <span className="text-2xl font-black text-textMain">{data.KPIs.total_transactions.toLocaleString()}</span>
+                <span className="text-primary font-bold text-xs mb-1 flex items-center"><ArrowUp className="w-3 h-3" /> 12%</span>
               </div>
             </div>
 
             <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm group hover:shadow-md transition-shadow">
-               <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Liquidity Score</p>
-               <div className="flex items-end gap-2">
-                 <span className="text-2xl font-black text-textMain">{Math.min(98, Math.round(data.KPIs.total_transactions/100))}</span>
-                 <span className="text-textMuted font-medium text-xs mb-1">/ 100</span>
-               </div>
+              <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Median PPSF</p>
+              <div className="flex items-end gap-2">
+                <span className="text-2xl font-black text-textMain">₹{data.KPIs.median_ppsft.toLocaleString()}</span>
+                <span className="text-primary font-bold text-xs mb-1 flex items-center"><ArrowUp className="w-3 h-3" /> 4.3%</span>
+              </div>
+            </div>
+
+            <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm group hover:shadow-md transition-shadow">
+              <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Unique Properties</p>
+              <div className="flex items-end gap-2">
+                <span className="text-2xl font-black text-textMain">{data.KPIs.total_properties.toLocaleString()}</span>
+                <span className="text-primary font-bold text-xs mb-1 flex items-center">Verified</span>
+              </div>
             </div>
 
             <div className="bg-card border border-card-border rounded-xl p-5 shadow-sm group hover:shadow-md transition-shadow">
               <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-2">Total Value (Cr)</p>
               <div className="flex items-end gap-2">
-                 <span className="text-2xl font-black text-textMain">₹{(data.KPIs.total_value / 10000000).toFixed(2)}</span>
-                 <span className="text-danger font-bold text-xs mb-1 flex items-center"><ArrowDown className="w-3 h-3"/> 0.8%</span>
+                <span className="text-2xl font-black text-textMain">₹{(data.KPIs.total_value / 10000000).toFixed(2)}</span>
+                <span className="text-danger font-bold text-xs mb-1 flex items-center"><ArrowDown className="w-3 h-3" /> 0.8%</span>
               </div>
             </div>
           </div>
@@ -306,8 +306,8 @@ export default function GlobalAnalytics() {
                   <AreaChart data={data.Trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="macroPpsft" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
@@ -328,17 +328,17 @@ export default function GlobalAnalytics() {
             <div className="lg:col-span-5 bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col min-h-[350px]">
               <h3 className="text-lg font-bold text-textMain mb-1">Top Value Deals</h3>
               <p className="text-xs text-textMuted font-medium mb-6">Highest recorded registries</p>
-              
+
               <div className="space-y-3 flex-1 overflow-y-auto custom-scrollbar">
                 {data.TopTransactions.map((t, i) => (
                   <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background-secondary border border-card-border hover:border-primary/50 transition-colors">
                     <div className="overflow-hidden flex-1">
-                       <p className="text-sm font-bold text-textMain truncate">{t.building_name}</p>
-                       <p className="text-[10px] text-textMuted font-medium mt-0.5">{new Date(t.date).toLocaleDateString()}</p>
+                      <p className="text-sm font-bold text-textMain truncate">{t.building_name}</p>
+                      <p className="text-[10px] text-textMuted font-medium mt-0.5">{new Date(t.date).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">
-                       <p className="text-sm font-black text-primary-dark">₹{(t.value/10000000).toFixed(2)} Cr</p>
-                       <p className="text-[10px] text-textMuted uppercase tracking-widest font-bold">{t.area} sqft</p>
+                      <p className="text-sm font-black text-primary-dark">₹{(t.value / 10000000).toFixed(2)} Cr</p>
+                      <p className="text-[10px] text-textMuted uppercase tracking-widest font-bold">{t.area} sqft</p>
                     </div>
                   </div>
                 ))}

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { 
-  Building2, 
-  Globe2, 
-  Search, 
-  Bell, 
-  HelpCircle, 
+import React, { useState, useEffect } from 'react';
+import {
+  Building2,
+  Globe2,
+  Search,
+  Bell,
+  HelpCircle,
   LayoutDashboard,
   ArrowRightLeft,
   Briefcase,
@@ -21,17 +21,37 @@ import GlobalAnalytics from './components/GlobalAnalytics';
 import ProjectComparison from './components/ProjectComparison';
 import VillageComparisonChart from './components/VillageComparisonChart';
 import AllTransactionsTable from './components/AllTransactionsTable';
+import LandingHero from './components/LandingHero';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [activeTab, setActiveTab] = useState('global');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [globalStats, setGlobalStats] = useState(null);
+
+  useEffect(() => {
+    const fetchGlobalStats = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        console.log("API CHECk", apiUrl)
+        const response = await fetch(`${apiUrl}/global/analytics`);
+        if (response.ok) {
+          const result = await response.json();
+          setGlobalStats(result.KPIs);
+        }
+      } catch (error) {
+        console.error("Error fetching global stats:", error);
+      }
+    };
+    fetchGlobalStats();
+  }, []);
 
   const fetchBuildingData = async (buildingName) => {
     setLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log("API CHECk", apiUrl)
       const response = await fetch(`${apiUrl}/building/${encodeURIComponent(buildingName)}`);
       if (response.ok) {
         const result = await response.json();
@@ -50,7 +70,7 @@ export default function App() {
   };
 
   const NavItem = ({ id, icon: Icon, label, disabled = false }) => (
-    <button 
+    <button
       onClick={() => { if (!disabled) { setActiveTab(id); setMobileMenuOpen(false); } }}
       disabled={disabled}
       title={disabled ? "Coming Soon 😉" : ""}
@@ -67,28 +87,28 @@ export default function App() {
       {/* Side Navigation */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-card-border transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 flex flex-col`}>
         <div className="h-16 flex items-center px-6 border-b border-card-border shrink-0 gap-3">
-           <div className="w-10 h-10 flex items-center justify-center bg-white rounded border border-card-border overflow-hidden p-1.5 shadow-sm">
-             <img src="/favicon.png" alt="TruEstimate Logo" className="w-full h-full object-contain" />
-           </div>
-           <div>
-             <h1 className="text-lg font-black tracking-tight text-primary-dark leading-none">TruEstimate</h1>
-             <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mt-0.5">Engine</p>
-           </div>
+          <div className="w-10 h-10 flex items-center justify-center bg-white rounded border border-card-border overflow-hidden p-1.5 shadow-sm">
+            <img src="/favicon.png" alt="TruEstimate Logo" className="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h1 className="text-lg font-black tracking-tight text-primary-dark leading-none">TruEstimate</h1>
+            <p className="text-[10px] text-textMuted font-bold uppercase tracking-widest mt-1.5">Engine</p>
+          </div>
         </div>
-        
+
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-           <NavItem id="global" icon={LayoutDashboard} label="Global Dashboard" />
-           <NavItem id="project" icon={Building2} label="TruEstimate" />
-           <NavItem id="all_transactions" icon={List} label="All Transactions" />
-           <NavItem id="compare" icon={ArrowRightLeft} label="Compare Assets" disabled={true} />
+          <NavItem id="global" icon={LayoutDashboard} label="Global Dashboard" />
+          <NavItem id="project" icon={Building2} label="TruEstimate" />
+          <NavItem id="all_transactions" icon={List} label="All Transactions" />
+          <NavItem id="compare" icon={ArrowRightLeft} label="Compare Assets" disabled={true} />
         </nav>
-        
+
         {/* Footer removed */}
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col md:ml-64 min-w-0 bg-background">
-        
+
         {/* Top Navbar removed */}
         {mobileMenuOpen === false && (
           <button className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white border border-card-border rounded-lg shadow-sm text-textMuted hover:text-textMain" onClick={() => setMobileMenuOpen(true)}>
@@ -98,65 +118,61 @@ export default function App() {
 
         {/* Dynamic Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-           {activeTab === 'global' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <GlobalAnalytics />
-              </div>
-           )}
+          {activeTab === 'global' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <GlobalAnalytics />
+            </div>
+          )}
 
-           {activeTab === 'all_transactions' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <AllTransactionsTable />
-              </div>
-           )}
+          {activeTab === 'all_transactions' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <AllTransactionsTable />
+            </div>
+          )}
 
-           {activeTab === 'compare' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <ProjectComparison />
-              </div>
-           )}
+          {activeTab === 'compare' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <ProjectComparison />
+            </div>
+          )}
 
-           {activeTab === 'project' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-8">
-                 <div className="flex justify-center mb-4">
-                   <SearchBar onSelect={fetchBuildingData} />
-                 </div>
+          {activeTab === 'project' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-8">
+              {loading && (
+                <div className="flex justify-center items-center py-20">
+                  <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                </div>
+              )}
 
-                 {loading && (
-                   <div className="flex justify-center items-center py-20">
-                     <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                   </div>
-                 )}
+              {!loading && data && (
+                <div className="space-y-8">
+                  <div className="flex justify-center mb-4">
+                    <SearchBar onSelect={fetchBuildingData} />
+                  </div>
+                  <TruEstimateHero data={data} />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+                    <Chart data={data} />
+                    <VillageComparisonChart data={data.VillageComparison} villageName={data.village} />
+                    <div className="lg:col-span-2">
+                      <TransactionsTable transactions={data.Transactions} />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                 {!loading && data && (
-                   <div className="space-y-8">
-                     <TruEstimateHero data={data} />
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
-                        <Chart data={data} />
-                        <VillageComparisonChart data={data.VillageComparison} villageName={data.village} />
-                        <div className="lg:col-span-2">
-                           <TransactionsTable transactions={data.Transactions} />
-                        </div>
-                     </div>
-                   </div>
-                 )}
-
-                 {!loading && !data && (
-                   <div className="text-center py-20 bg-white rounded-2xl border border-card-border shadow-sm">
-                      <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-card-border">
-                        <Search className="w-6 h-6 text-textMuted" />
-                      </div>
-                      <h3 className="text-lg font-bold text-textMain">Search TruEstimate</h3>
-                      <p className="text-sm text-textMuted mt-1 max-w-sm mx-auto">Look up a specific project to view its intelligence-driven price adjustments and verify market entries.</p>
-                   </div>
-                 )}
-              </div>
-           )}
+              {!loading && !data && (
+                <LandingHero
+                  onSearch={fetchBuildingData}
+                  totalProperties={globalStats?.total_properties}
+                />
+              )}
+            </div>
+          )}
         </main>
-        
+
         {/* Mobile menu overlay */}
         {mobileMenuOpen && (
-           <div className="fixed inset-0 bg-black/20 z-30 md:hidden" onClick={() => setMobileMenuOpen(false)} />
+          <div className="fixed inset-0 bg-black/20 z-30 md:hidden" onClick={() => setMobileMenuOpen(false)} />
         )}
       </div>
     </div>
