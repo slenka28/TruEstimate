@@ -21,19 +21,20 @@ app.add_middleware(
 def search_buildings(query: str = ""):
     if not query:
         return []
-    conn = get_clean_connection()
+    from qc_database import get_qc_connection
+    conn = get_qc_connection()
     cursor = conn.cursor()
     # Case-insensitive LIKE search
     cursor.execute("""
-        SELECT DISTINCT building_name 
-        FROM transactions 
-        WHERE building_name LIKE ? COLLATE NOCASE
-        ORDER BY building_name
+        SELECT DISTINCT project_name 
+        FROM publish_ready 
+        WHERE project_name LIKE ? COLLATE NOCASE
+        ORDER BY project_name
         LIMIT 100
     """, (f"%{query}%",))
     rows = cursor.fetchall()
     conn.close()
-    return [row["building_name"] for row in rows]
+    return [row[0] for row in rows]
 
 @app.get("/search_village")
 def search_villages(query: str = ""):
